@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy and install gateway requirements
+COPY services/gateway/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy shared generated stubs + gateway code
+COPY shared ./shared
+COPY services/gateway ./services/gateway
+
+ENV PYTHONPATH=/app:/app/shared/gen
+ENV PORT=8080
+
+WORKDIR /app/services/gateway
+EXPOSE 8080
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]

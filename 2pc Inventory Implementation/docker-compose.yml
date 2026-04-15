@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    container_name: twopc-node1-gateway
+    environment:
+      - PORT=8080
+      - USERS_ADDR=users:50051
+      - CATALOG_ADDR=catalog:50051
+      - INVENTORY_ADDR=inventory:50051
+      - CIRCULATION_ADDR=circulation:50051
+      - AUDIT_ADDR=audit:50051
+      - LOCAL_DECISION_ADDR=localhost:50061
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - users
+      - catalog
+      - inventory
+      - circulation
+      - audit
+
+  users:
+    build:
+      context: .
+      dockerfile: services/users/Dockerfile
+    container_name: twopc-node2-users
+    environment:
+      - PORT=50051
+      - PYTHONUNBUFFERED=1
+
+  catalog:
+    build:
+      context: .
+      dockerfile: services/catalog/Dockerfile
+    container_name: twopc-node3-catalog
+    environment:
+      - PORT=50051
+      - PYTHONUNBUFFERED=1
+
+  inventory:
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
+    container_name: twopc-node4-inventory
+    environment:
+      - PORT=50051
+      - PYTHONUNBUFFERED=1
+
+  circulation:
+    build:
+      context: .
+      dockerfile: services/circulation/Dockerfile
+    container_name: twopc-node5-circulation
+    environment:
+      - PORT=50051
+      - PYTHONUNBUFFERED=1
+
+  audit:
+    build:
+      context: .
+      dockerfile: services/audit/Dockerfile
+    container_name: twopc-node6-audit
+    environment:
+      - PORT=50051
+      - PYTHONUNBUFFERED=1

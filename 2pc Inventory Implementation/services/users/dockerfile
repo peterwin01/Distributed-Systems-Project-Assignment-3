@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY services/users/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy shared generated protobuf files
+COPY shared ./shared
+
+# Copy services code
+COPY services/users ./services/users
+
+# Specifying Python shared/gen folder
+ENV PYTHONPATH=/app:/app/shared/gen
+ENV PORT=50051
+
+WORKDIR /app/services/users
+EXPOSE 50051
+
+CMD ["python", "app.py"]

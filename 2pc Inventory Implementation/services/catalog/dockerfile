@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY services/catalog/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY shared ./shared
+COPY services/catalog ./services/catalog
+
+ENV PYTHONPATH=/app:/app/shared/gen
+ENV PORT=50051
+
+WORKDIR /app/services/catalog
+EXPOSE 50051
+
+CMD ["python", "app.py"]

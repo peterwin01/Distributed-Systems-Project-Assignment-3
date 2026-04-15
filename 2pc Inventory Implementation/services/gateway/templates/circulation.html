@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Circulation - Library System</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Circulation</h1>
+
+    <h2>Checkout Book</h2>
+    <form method="get" action="/circulation">
+        <label>User ID:</label>
+        <input type="text" name="user_id" required />
+
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required />
+
+        <button type="submit">Checkout</button>
+    </form>
+
+    {% if result %}
+    <hr/>
+    <h3>Result</h3>
+    <p><strong>Status:</strong> {{ "Success" if result.ok else "Failed" }}</p>
+    <p><strong>Message:</strong> {{ result.message }}</p>
+    {% if result.transaction_id %}
+    <p><strong>Transaction ID:</strong> {{ result.transaction_id }}</p>
+    {% endif %}
+    {% if result.decision %}
+    <p><strong>2PC Decision:</strong> {{ result.decision }}</p>
+    {% endif %}
+    {% if result.due_date %}
+    <p><strong>Due Date:</strong> {{ result.due_date }}</p>
+    {% endif %}
+    {% if result.votes %}
+    <p><strong>Votes:</strong></p>
+    <ul>
+        {% for vote in result.votes %}
+        <li>{{ vote }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endif %}
+
+    <hr/>
+
+    <h2>Checkin Book</h2>
+    <form method="post" action="/circulation/checkin">
+        <label>User ID:</label>
+        <input type="text" name="user_id" required />
+
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required />
+
+        <button type="submit">Checkin</button>
+    </form>
+
+    <a class="back" href="/">Back to Home</a>
+</div>
+</body>
+</html>

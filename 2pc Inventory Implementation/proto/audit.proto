@@ -1,0 +1,16 @@
+syntax = "proto3";
+package audit;
+
+service AuditService {
+  rpc LogEvent (LogRequest) returns (SimpleResponse);
+}
+
+message LogRequest {
+  string event_type = 1;
+  string description = 2;
+}
+
+message SimpleResponse {
+  bool ok = 1;
+  string message = 2;
+}

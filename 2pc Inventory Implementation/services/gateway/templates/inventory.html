@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Inventory - Library System</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Inventory Management</h1>
+
+    <h2>Add Copies</h2>
+    <form method="post" action="/inventory/add">
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required />
+
+        <label>Number of Copies:</label>
+        <input type="number" name="count" required />
+
+        <button type="submit">Add Copies</button>
+    </form>
+
+    <hr/>
+
+    <h2>Check Availability</h2>
+    <form method="get" action="/inventory">
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required />
+        <button type="submit">Check</button>
+    </form>
+
+    <a class="back" href="/">Back to Home</a>
+</div>
+</body>
+</html>

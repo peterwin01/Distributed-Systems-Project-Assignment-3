@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Books - Library System</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Publish Book</h1>
+
+    <form method="post" action="/books/publish">
+        <label>Title:</label>
+        <input type="text" name="title" required />
+
+        <label>Author:</label>
+        <input type="text" name="author" required />
+
+        <button type="submit">Publish</button>
+    </form>
+
+    <hr/>
+
+    <h2>Get Book</h2>
+    <form method="get" action="/books/">
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required /> <!--ep-->
+        <button type="submit">Get Book</button>
+    </form>
+
+    {% if result %}
+        <div class="result">
+        {% if result.ok %}
+            <p><strong>Success:</strong> {{ result.message }}</p>
+        {% else %}
+            <p><strong>Error:</strong> {{ result.message }}</p>
+        {% endif %}
+
+        {% if result.book_id %}
+            <p><strong>Book ID:</strong> {{ result.book_id }}</p>
+        {% endif %}
+
+        {% if result.title %}
+            <p><strong>Title:</strong> {{ result.title }}</p>
+        {% endif %}
+
+        {% if result.author %}
+            <p><strong>Author:</strong> {{ result.author }}</p>
+        {% endif %}
+        </div>
+    {% endif %}
+
+    <a class="back" href="/">Back to Home</a>
+</div>
+</body>
+</html>

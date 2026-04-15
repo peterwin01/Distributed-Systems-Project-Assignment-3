@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package twopc;
+
+enum VoteStatus {
+  VOTE_UNKNOWN = 0;
+  VOTE_COMMIT = 1;
+  VOTE_ABORT = 2;
+}
+
+enum DecisionStatus {
+  DECISION_UNKNOWN = 0;
+  GLOBAL_COMMIT = 1;
+  GLOBAL_ABORT = 2;
+}
+
+message PrepareRequest {
+  string transaction_id = 1;
+  string user_id = 2;
+  string book_id = 3;
+  string coordinator_node_id = 4;
+}
+
+message VoteResponse {
+  string transaction_id = 1;
+  string node_id = 2;
+  VoteStatus vote = 3;
+  string reason = 4;
+}
+
+message DecisionRequest {
+  string transaction_id = 1;
+  string user_id = 2;
+  string book_id = 3;
+  string coordinator_node_id = 4;
+  DecisionStatus decision = 5;
+}
+
+message DecisionResponse {
+  string transaction_id = 1;
+  string node_id = 2;
+  bool success = 3;
+  string message = 4;
+}
+
+message VoteCollection {
+  string transaction_id = 1;
+  string user_id = 2;
+  string book_id = 3;
+  repeated VoteResponse votes = 4;
+}
+
+message DecisionResult {
+  string transaction_id = 1;
+  DecisionStatus decision = 2;
+}
+
+service TwoPCParticipantService {
+  rpc PrepareCheckout(PrepareRequest) returns (VoteResponse);
+  rpc FinalizeCheckout(DecisionRequest) returns (DecisionResponse);
+}
+
+service TwoPCDecisionService {
+  rpc TriggerDecision(VoteCollection) returns (DecisionResult);
+}
