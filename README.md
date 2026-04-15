@@ -146,8 +146,11 @@ Majority ACK → commit
 
 
 ✅ How to Test Raft
+
 ✔ Successful Transaction
+
 Publish a book
+
 Add copies of book
 
 Expected:
