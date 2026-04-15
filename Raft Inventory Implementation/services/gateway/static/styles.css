@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    margin-top: 0;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+/**This shows the users.html results**/
+.result {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005fa3;
+}
+
+.nav-links a {
+    display: block;
+    margin: 10px 0;
+    text-decoration: none;
+    font-weight: bold;
+    color: #0078d7;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #555;
+}

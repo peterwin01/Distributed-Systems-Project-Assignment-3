@@ -1,0 +1,182 @@
+# docker-compose.yml
+# ==================
+# Defines all the containers for the library system.
+#
+# Services:
+#   gateway          - FastAPI web UI, talks to all backend services via gRPC
+#   users            - User registration and lookup
+#   catalog          - Book publishing and lookup
+#   circulation      - Book checkout and checkin
+#   audit            - Event logging
+#   inventory-node1  - \
+#   inventory-node2  -  \
+#   inventory-node3  -   > 5-node Raft cluster for inventory (book stock counts)
+#   inventory-node4  -  /
+#   inventory-node5  - /
+#
+# The inventory service is replicated across 5 nodes using Raft consensus.
+# All 5 nodes run the same code (services/inventory/app.py) but with
+# different NODE_ID values.  They elect a leader among themselves and
+# replicate every write operation across the cluster.
+#
+# The gateway can connect to ANY inventory node -- if it's a follower,
+# it will forward the request to the current leader.
+
+version: "3.9"
+services:
+
+  # === Gateway (Web UI) ===
+  # The API gateway serves the HTML pages and forwards requests to
+  # backend services via gRPC.
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    container_name: library-gateway
+    environment:
+      - PORT=8080
+      - USERS_ADDR=users:50051
+      - CATALOG_ADDR=catalog:50051
+      # For inventory, we give the gateway ALL 5 node addresses.
+      # It tries each one in order until one responds (see grpc_clients.py).
+      # This way, even if node1 is down, the gateway can reach node2, etc.
+      - INVENTORY_NODE_COUNT=5
+      - INVENTORY_NODE_1=inventory-node1:50051
+      - INVENTORY_NODE_2=inventory-node2:50051
+      - INVENTORY_NODE_3=inventory-node3:50051
+      - INVENTORY_NODE_4=inventory-node4:50051
+      - INVENTORY_NODE_5=inventory-node5:50051
+    ports:
+      - "8080:8080"        # Expose web UI on http://localhost:8080
+    depends_on:
+      - users
+      - catalog
+      - inventory-node1
+      - inventory-node2
+      - inventory-node3
+      - inventory-node4
+      - inventory-node5
+
+  # === Users Service ===
+  users:
+    build:
+      context: .
+      dockerfile: services/users/Dockerfile
+    container_name: library-users
+    environment:
+      - PORT=50051
+
+  # === Catalog Service ===
+  catalog:
+    build:
+      context: .
+      dockerfile: services/catalog/Dockerfile
+    container_name: library-catalog
+    environment:
+      - PORT=50051
+
+  # === Circulation Service ===
+  circulation:
+    build:
+      context: .
+      dockerfile: services/circulation/Dockerfile
+    container_name: library-circulation
+    environment:
+      - PORT=50051
+
+  # === Audit Service ===
+  audit:
+    build:
+      context: .
+      dockerfile: services/audit/Dockerfile
+    container_name: library-audit
+    environment:
+      - PORT=50051
+
+  # ==========================================================================
+  #  Raft Inventory Cluster (5 nodes)
+  # ==========================================================================
+  # All 5 nodes use the SAME Dockerfile and code (services/inventory/).
+  # Each node gets a unique NODE_ID and knows all peer addresses.
+  # The PEER_<id> variables tell each node how to reach the others.
+  # (A node skips its own PEER entry automatically in app.py.)
+
+  # --- Node 1 ---
+  inventory-node1:
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
+    container_name: inventory-node1
+    environment:
+      - PORT=50051
+      - NODE_ID=1              # This node's unique ID
+      - NODE_COUNT=5           # Total nodes in the cluster
+      - PEER_1=inventory-node1:50051
+      - PEER_2=inventory-node2:50051
+      - PEER_3=inventory-node3:50051
+      - PEER_4=inventory-node4:50051
+      - PEER_5=inventory-node5:50051
+
+  # --- Node 2 ---
+  inventory-node2:
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
+    container_name: inventory-node2
+    environment:
+      - PORT=50051
+      - NODE_ID=2
+      - NODE_COUNT=5
+      - PEER_1=inventory-node1:50051
+      - PEER_2=inventory-node2:50051
+      - PEER_3=inventory-node3:50051
+      - PEER_4=inventory-node4:50051
+      - PEER_5=inventory-node5:50051
+
+  # --- Node 3 ---
+  inventory-node3:
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
+    container_name: inventory-node3
+    environment:
+      - PORT=50051
+      - NODE_ID=3
+      - NODE_COUNT=5
+      - PEER_1=inventory-node1:50051
+      - PEER_2=inventory-node2:50051
+      - PEER_3=inventory-node3:50051
+      - PEER_4=inventory-node4:50051
+      - PEER_5=inventory-node5:50051
+
+  # --- Node 4 ---
+  inventory-node4:
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
+    container_name: inventory-node4
+    environment:
+      - PORT=50051
+      - NODE_ID=4
+      - NODE_COUNT=5
+      - PEER_1=inventory-node1:50051
+      - PEER_2=inventory-node2:50051
+      - PEER_3=inventory-node3:50051
+      - PEER_4=inventory-node4:50051
+      - PEER_5=inventory-node5:50051
+
+  # --- Node 5 ---
+  inventory-node5:
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
+    container_name: inventory-node5
+    environment:
+      - PORT=50051
+      - NODE_ID=5
+      - NODE_COUNT=5
+      - PEER_1=inventory-node1:50051
+      - PEER_2=inventory-node2:50051
+      - PEER_3=inventory-node3:50051
+      - PEER_4=inventory-node4:50051
+      - PEER_5=inventory-node5:50051

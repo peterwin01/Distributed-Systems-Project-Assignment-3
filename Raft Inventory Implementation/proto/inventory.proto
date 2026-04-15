@@ -1,0 +1,25 @@
+syntax = "proto3";
+package inventory;
+
+service InventoryService {
+  rpc AddCopies (AddCopiesRequest) returns (InventoryResponse);
+  rpc GetAvailability (BookRequest) returns (InventoryResponse);
+  rpc DecrementCopy (BookRequest) returns (InventoryResponse);
+  rpc IncrementCopy (BookRequest) returns (InventoryResponse);
+}
+
+message AddCopiesRequest {
+  string book_id = 1;
+  int32 count = 2;
+}
+
+message BookRequest {
+  string book_id = 1;
+}
+
+message InventoryResponse {
+  bool ok = 1;
+  string message = 2;
+  string book_id = 3;
+  int32 available = 4;
+}

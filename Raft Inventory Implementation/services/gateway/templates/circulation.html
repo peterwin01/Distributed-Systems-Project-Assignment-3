@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Circulation - Library System</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Circulation</h1>
+
+    <h2>Checkout Book</h2>
+    <form method="get" action="/circulation">
+        <label>User ID:</label>
+        <input type="text" name="user_id" required />
+
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required />
+
+        <button type="submit">Checkout</button>
+    </form>
+
+    <hr/>
+
+    <h2>Checkin Book</h2>
+    <form method="post" action="/circulation/checkin">
+        <label>User ID:</label>
+        <input type="text" name="user_id" required />
+
+        <label>Book ID:</label>
+        <input type="text" name="book_id" required />
+
+        <button type="submit">Checkin</button>
+    </form>
+
+    <a class="back" href="/">Back to Home</a>
+</div>
+</body>
+</html>

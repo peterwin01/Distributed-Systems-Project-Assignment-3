@@ -1,0 +1,4 @@
+grpcio==1.76.0
+grpcio-tools==1.76.0
+# protobuf helps compile the
+protobuf>=6.31.1,<7.0.0

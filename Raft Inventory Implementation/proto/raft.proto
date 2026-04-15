@@ -1,0 +1,85 @@
+// raft.proto
+// =========
+// Defines the gRPC service and messages used for Raft consensus
+// between inventory nodes.  This proto is compiled at Docker build time.
+//
+// Three RPCs:
+//   RequestVote    - Q3: candidate asks peers to vote for it
+//   AppendEntries  - Q3+Q4: leader sends heartbeat + log to followers
+//   ForwardRequest - Q4: follower forwards a client write to the leader
+
+syntax = "proto3";
+package raft;
+
+service RaftService {
+  // Q3: Leader election - a candidate requests a vote from a peer
+  rpc RequestVote (RequestVoteRequest) returns (RequestVoteResponse);
+
+  // Q3+Q4: Heartbeat + log replication
+  //   - As heartbeat: leader sends this every 1s to say "I'm alive"
+  //   - As log replication: leader sends its full log + commit index
+  rpc AppendEntries (AppendEntriesRequest) returns (AppendEntriesResponse);
+
+  // Q4: A follower received a client write it can't handle,
+  //     so it forwards the request to the leader via this RPC
+  rpc ForwardRequest (ForwardRequestMessage) returns (ForwardRequestResponse);
+}
+
+// ---- Leader Election Messages (Q3) ----
+
+// Sent by a candidate to each peer asking for their vote
+message RequestVoteRequest {
+  int32 term = 1;          // The candidate's current term number
+  int32 candidate_id = 2;  // The node ID of the candidate requesting the vote
+}
+
+// Response from a peer when asked to vote
+message RequestVoteResponse {
+  int32 term = 1;          // The peer's current term (so candidate can update if behind)
+  bool vote_granted = 2;   // True if the peer voted for this candidate
+}
+
+// ---- Log Replication Messages (Q4) ----
+
+// A single entry in the replicated log
+// Each entry represents one inventory operation (AddCopies, DecrementCopy, etc.)
+message LogEntry {
+  string operation = 1;    // Operation name: "AddCopies", "DecrementCopy", "IncrementCopy"
+  string book_id = 2;      // Which book this operation applies to
+  int32 count = 3;         // Number of copies (only used for AddCopies)
+  int32 term = 4;          // The term when this entry was created
+  int32 index = 5;         // Position of this entry in the log (0-based)
+}
+
+// Sent by the leader to each follower (serves as both heartbeat and log sync)
+message AppendEntriesRequest {
+  int32 term = 1;                  // Leader's current term
+  int32 leader_id = 2;             // So followers know who the leader is
+  repeated LogEntry entries = 3;   // The leader's ENTIRE log (simplified Raft)
+  int32 commit_index = 4;          // Index of the most recently committed entry
+                                   // Followers execute entries up to this index
+}
+
+// Response from a follower after receiving AppendEntries
+message AppendEntriesResponse {
+  int32 term = 1;          // Follower's current term (leader steps down if higher)
+  bool success = 2;        // True if the follower accepted the log
+}
+
+// ---- Client Request Forwarding (Q4) ----
+
+// When a follower gets a client write, it packages it into this message
+// and forwards it to the leader
+message ForwardRequestMessage {
+  string operation = 1;    // "AddCopies", "DecrementCopy", or "IncrementCopy"
+  string book_id = 2;      // Which book
+  int32 count = 3;         // How many copies (for AddCopies)
+}
+
+// The leader's response after processing the forwarded request
+message ForwardRequestResponse {
+  bool ok = 1;             // Whether the operation succeeded
+  string message = 2;      // Human-readable status message
+  string book_id = 3;      // Which book was affected
+  int32 available = 4;     // Current number of available copies after the operation
+}

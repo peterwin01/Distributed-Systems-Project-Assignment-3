@@ -1,0 +1,24 @@
+syntax = "proto3";
+package catalog;
+
+service CatalogService {
+  rpc PublishBook (PublishBookRequest) returns (BookResponse);
+  rpc GetBook (GetBookRequest) returns (BookResponse);
+}
+
+message PublishBookRequest {
+  string title = 1;
+  string author = 2;
+}
+
+message GetBookRequest {
+  string book_id = 1;
+}
+
+message BookResponse {
+  bool ok = 1;
+  string message = 2;
+  string book_id = 3;
+  string title = 4;
+  string author = 5;
+}

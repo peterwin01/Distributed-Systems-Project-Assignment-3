@@ -1,0 +1,28 @@
+syntax = "proto3";
+package circulation;
+
+service CirculationService {
+  rpc CheckoutBook (CheckoutRequest) returns (CheckoutResponse);
+  rpc CheckinBook (CheckinRequest) returns (SimpleResponse);
+}
+
+message CheckoutRequest {
+  string user_id = 1;
+  string book_id = 2;
+}
+
+message CheckinRequest {
+  string user_id = 1;
+  string book_id = 2;
+}
+
+message CheckoutResponse {
+  bool ok = 1;
+  string message = 2;
+  string due_date = 3;
+}
+
+message SimpleResponse {
+  bool ok = 1;
+  string message = 2;
+}
