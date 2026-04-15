@@ -208,6 +208,7 @@ GitHub Repository
 
 
 Work Distribution
+
 Sachin Malik
 
 Implemented Two-Phase Commit (2PC)
