@@ -197,20 +197,19 @@ In the participant unavailability case, the coordinator fails to receive a respo
 
 ---
 
-✅ How to Test Raft
+## ✅ How to Test Raft
 
-✔ Successful Transaction
+### ✔ Successful Transaction
 
-Publish a book
-
-Add copies of book
+1. Publish a book
+2. Add copies of book
 
 Expected:
 
-Leader commits log[0] publish given majority ACK
-Followers commit log[0] on next heartbeat after leader executes
-Leader commits log[1] add copies given majority ACK
-Followers commit log[1] on next heartbeat after leader executes
+* Leader commits log[0] publish given majority ACK
+* Followers commit log[0] on next heartbeat after leader executes
+* Leader commits log[1] add copies given majority ACK
+* Followers commit log[1] on next heartbeat after leader executes
 
 ---
 
@@ -231,10 +230,10 @@ Followers commit log[1] on next heartbeat after leader executes
 * Delay heartbeat
 * Node becomes candidate
 
-### 4. New Node Joining
+### 4. Majority of nodes in cluster are down
 
-* Add node
-* Syncs with leader
+* Pause or stop majority of nodes (3 in this project)
+* Writes will not be committed by leader
 
 ### 5. Log Inconsistency
 
